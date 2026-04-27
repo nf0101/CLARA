@@ -1,0 +1,17 @@
+# data: ignora tutto, eccetto le directory stesse e i .gitkeep
+data/raw/*
+data/processed/*
+data/synthetic/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/synthetic/.gitkeep
+!data/raw/*/
+!data/processed/*/
+!data/raw/*/.gitkeep
+!data/processed/*/.gitkeep
+
+# experiments: stessa logica
+experiments/*
+!experiments/.gitkeep
+!experiments/*/
+!experiments/*/.gitkeep
