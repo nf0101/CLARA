@@ -1,0 +1,21 @@
+# RQ1 - confronto NLP-Weighted vs baselines context-blind + Oracle.
+# Lancia tutte le strategie sugli stessi seed e split per confronto pareato.
+
+experiment_name: rq1_baselines_vs_proposed
+
+data:
+  config: data/rdd2022_country_split
+
+strategies:
+  - strategies/fedavg
+  - strategies/fedprox
+  - strategies/scaffold
+  - strategies/oracle_weighted
+  - strategies/nlp_weighted
+
+seeds: [42, 123, 2024, 7, 31]   # 5 seed per significativita' statistica
+
+metrics:
+  - global_map50
+  - recall_at_critical    # recall sulla classe critica (Componente A)
+  - rounds_to_target      # numero round per raggiungere recall target

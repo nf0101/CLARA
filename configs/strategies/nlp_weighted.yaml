@@ -1,0 +1,15 @@
+# Metodo proposto: NLP-Weighted Aggregation.
+# Usa lo score di urgenza realistico (rumoroso) prodotto dal modulo NLP.
+
+defaults:
+  - /base
+
+strategy:
+  name: nlp_weighted
+  cap: 0.5
+  time_decay: 0.9
+
+nlp:
+  ner_model: dbmdz/bert-base-italian-xxl-cased   # placeholder
+  sentiment_model: MilaNLProc/feel-it-italian-sentiment
+  urgency_aggregator: mean                       # mean | max | weighted_recent

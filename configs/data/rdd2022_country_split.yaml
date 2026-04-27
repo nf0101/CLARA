@@ -1,0 +1,21 @@
+# Split country-wise di RDD2022 -> 6 client FL Non-IID
+
+dataset: rdd2022
+root: data/processed/rdd2022_clients
+clients:
+  - japan
+  - india
+  - czech
+  - norway
+  - usa
+  - china
+
+# Filtro: solo positive images (almeno una bbox per immagine)
+positive_only: true
+
+# Classi e mapping (devono coincidere con src/evaluation/critical_classes.py)
+classes:
+  - longitudinal_crack    # D00
+  - transverse_crack      # D10
+  - alligator_crack       # D20
+  - pothole               # D40

@@ -1,0 +1,20 @@
+# RQ2 - robustezza al rumore del segnale NLP (Componente C).
+# Sweep sul livello di accuratezza simulata del classificatore di urgenza.
+
+experiment_name: rq2_nlp_noise_sweep
+
+data:
+  config: data/rdd2022_country_split
+
+base_strategy: strategies/nlp_weighted
+
+noise_levels: [1.0, 0.9, 0.8, 0.7, 0.5]   # accuratezza simulata
+seeds: [42, 123, 2024]
+
+# Brace di confronto: la baseline FedAvg viene rilanciata per identificare
+# la soglia di break-even (sotto la quale NLP-Weighted perde il vantaggio).
+reference_baseline: strategies/fedavg
+
+metrics:
+  - global_map50
+  - recall_at_critical

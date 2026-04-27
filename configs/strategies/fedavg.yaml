@@ -1,0 +1,7 @@
+# Baseline context-blind: FedAvg (McMahan et al., 2017)
+defaults:
+  - /base
+
+strategy:
+  name: fedavg
+  # nessun parametro aggiuntivo: media pesata per |D_k|

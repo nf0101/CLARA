@@ -1,0 +1,11 @@
+# Componente B del protocollo: upper bound informativo.
+# Pesa i client usando direttamente la ground truth esogena di criticita'
+# (definita in src/evaluation/critical_classes.py), SENZA passare dall'NLP.
+
+defaults:
+  - /base
+
+strategy:
+  name: oracle_weighted
+  cap: 0.5            # cap sui pesi (anti oblio catastrofico)
+  time_decay: 0.9     # costante di decadimento temporale per round

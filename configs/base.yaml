@@ -1,0 +1,26 @@
+# Iperparametri di default condivisi da tutti gli esperimenti.
+# Le config specifiche in configs/experiments/ ereditano e sovrascrivono questi valori.
+
+seed: 42
+device: cuda
+
+federated:
+  num_rounds: 100
+  clients_per_round: 6
+  local_epochs: 3
+  batch_size: 16
+
+model:
+  arch: yolov8n          # nano per partire, salire a yolov8s/m se serve
+  num_classes: 4         # RDD2022: longitudinal, transverse, alligator, pothole
+  img_size: 640
+
+optimizer:
+  name: sgd
+  lr: 0.01
+  momentum: 0.9
+  weight_decay: 0.0005
+
+logging:
+  log_every_n_rounds: 1
+  save_checkpoints: true

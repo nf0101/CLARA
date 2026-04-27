@@ -1,0 +1,7 @@
+# Baseline regolarizzata: FedProx (Li et al., 2020)
+defaults:
+  - /base
+
+strategy:
+  name: fedprox
+  mu: 0.01    # forza del termine prossimale

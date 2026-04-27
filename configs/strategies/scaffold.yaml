@@ -1,0 +1,7 @@
+# Baseline state-of-the-art per Non-IID: SCAFFOLD (Karimireddy et al., 2020)
+defaults:
+  - /base
+
+strategy:
+  name: scaffold
+  # le control variate sono mantenute server-side e per-client
