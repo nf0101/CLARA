@@ -32,6 +32,7 @@ import flwr as fl
 from flwr.common import Context, NDArrays, Scalar
 
 
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CLIENTS_ROOT = PROJECT_ROOT / "data" / "processed" / "rdd2022_clients"
 RUNS_ROOT = PROJECT_ROOT / "experiments" / "fl_runs"
@@ -42,6 +43,10 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.federated.strategies.oracle_weighted import (  # noqa: E402
     OracleWeightedFedAvg,
     load_oracle_weights,
+)
+from src.federated.strategies.nlp_weighted import (  # noqa: E402
+    NLPWeightedFedAvg,
+    load_oracle_urgency,
 )
 
 
@@ -185,10 +190,11 @@ class YoloFlowerClient(fl.client.NumPyClient):
         # Recall per-class: estraiamo quella della classe critica (D40, idx=3)
         # Utile per la metrica recall_at_critical della RQ1
         try:
-            class_recall = metrics.box.r   # array [P_per_class]
-            critical_recall = float(class_recall[3]) if len(class_recall) > 3 else 0.0
+            # AP@50 per classe (soglia-indipendente, stabile fra round)
+            class_ap50 = metrics.box.ap50
+            critical_ap50 = float(class_ap50[3]) if len(class_ap50) > 3 else 0.0
         except (AttributeError, IndexError):
-            critical_recall = 0.0
+            critical_ap50 = 0.0
 
         return (
             1.0 - map50,
@@ -196,7 +202,7 @@ class YoloFlowerClient(fl.client.NumPyClient):
             {
                 "map50": map50,
                 "map50_95": map_5095,
-                "recall_critical": critical_recall,
+                "critical_ap50": critical_ap50,  # <-- rinominata
                 "partition_id": self.partition_id,
             },
         )
@@ -285,6 +291,25 @@ def build_strategy(args: argparse.Namespace,
             cap=args.cap,
             **common_kwargs,
         )
+    if args.strategy == "nlp":
+        if args.urgency_provider == "oracle":
+            provider = load_oracle_urgency(
+                MANIFEST_PATH,
+                critical_class=CRITICAL_CLASS,
+                client_names=client_names,
+            )
+        else:
+            raise ValueError(
+                f"urgency_provider sconosciuto: {args.urgency_provider}"
+            )
+        return NLPWeightedFedAvg(
+            urgency_provider=provider,
+            client_names=client_names,
+            alpha=args.alpha,
+            cap=args.cap,
+            time_decay=args.time_decay,
+            **common_kwargs,
+        )
 
     raise ValueError(f"Strategia sconosciuta: {args.strategy}")
 
@@ -296,7 +321,7 @@ def build_strategy(args: argparse.Namespace,
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--strategy", choices=["fedavg", "oracle"], default="fedavg",
+        "--strategy", choices=["fedavg", "oracle", "nlp"], default="fedavg",
         help="Quale strategy usare per l'aggregazione",
     )
     parser.add_argument(
@@ -319,6 +344,19 @@ def parse_args() -> argparse.Namespace:
         "--cap", type=float, default=0.5,
         help="Tetto massimo per il peso di un singolo client. Default: 0.5",
     )
+    parser.add_argument(
+        "--time-decay", type=float, default=1.0,
+        help="Time decay del boost di urgenza per round (in (0, 1]). "
+             "1.0 = nessun decay. Default: 1.0",
+    )
+    parser.add_argument(
+        "--urgency-provider", choices=["oracle"], default="oracle",
+        help="Sorgente dell'urgency score. 'oracle' = pesi statici dal manifest "
+             "(equivalente a strategy=oracle, per sanity check architettura). "
+             "Default: oracle",
+    )
+
+
     return parser.parse_args()
 
 
@@ -349,6 +387,11 @@ def main() -> int:
     if args.strategy == "oracle":
         print(f"  alpha        : {args.alpha}")
         print(f"  cap          : {args.cap}")
+    if args.strategy == "nlp":
+        print(f"  provider     : {args.urgency_provider}")
+        print(f"  alpha        : {args.alpha}")
+        print(f"  cap          : {args.cap}")
+        print(f"  time_decay   : {args.time_decay}")
     print(f"  output       : {run_root}")
     print("=" * 70)
 
@@ -390,6 +433,8 @@ def main() -> int:
         "local_epochs": args.local_epochs,
         "alpha": args.alpha if args.strategy == "oracle" else None,
         "cap": args.cap if args.strategy == "oracle" else None,
+        "time_decay": args.time_decay if args.strategy == "nlp" else None,
+        "urgency_provider": args.urgency_provider if args.strategy == "nlp" else None,
         "metrics_distributed": {
             k: [[r, v] for r, v in vals]
             for k, vals in history.metrics_distributed.items()
