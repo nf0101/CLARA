@@ -157,6 +157,133 @@ def load_oracle_urgency(
     return OracleUrgencyProvider(weights)
 
 
+"""
+Aggiunta al file src/federated/strategies/nlp_weighted.py.
+
+Va INSERITA in fondo al file esistente, dopo la classe OracleUrgencyProvider
+e prima della classe NLPWeightedFedAvg. Le righe di import in cima al file
+NON cambiano (numpy e' gia' importato).
+
+Implementa il Componente C del protocollo: iniezione di rumore controllato
+nel segnale di urgenza. Modella un classificatore NLP con accuratezza
+simulata variabile, usato per produrre la curva di robustezza di RQ2.
+
+Design (vedi discussione):
+    A2 - permutazione dei pesi oracle veri (modella errore di
+         geolocalizzazione del NER)
+    B1 - mix additivo: score = accuracy * vero + (1 - accuracy) * permutato
+         (produce curva continua e controllabile)
+    C2 - nuova permutazione ogni round (rumore stocastico, non bias
+         sistematico)
+"""
+
+# ===========================================================================
+# PROVIDER 2: NOISY ORACLE (per RQ2 - sweep di accuratezza simulata)
+# ===========================================================================
+
+class NoisyOracleUrgencyProvider(UrgencyProvider):
+    """Pesi oracle perturbati da una permutazione casuale.
+
+    Modello di errore: ad ogni round produce uno score "noisy" tramite
+
+        noisy[c] = accuracy * oracle[c] + (1 - accuracy) * permuted[c]
+
+    dove `permuted` e' una permutazione casuale di `oracle` sui client
+    partecipanti al round, generata da un RNG seedato.
+
+    Casi particolari:
+        accuracy = 1.0  -> rumore zero, identico a OracleUrgencyProvider
+        accuracy = 0.0  -> rumore massimo, completa permutazione random
+        accuracy = 0.5  -> 50% segnale + 50% permutazione
+
+    Il punto di break-even (sotto il quale il metodo proposto perde il
+    vantaggio rispetto a FedAvg) e' uno dei deliverable principali di RQ2.
+    """
+
+    def __init__(
+        self,
+        oracle_weights: dict[str, float],
+        accuracy: float,
+        seed: int = 42,
+    ) -> None:
+        """
+        Args:
+            oracle_weights: dict {client_name: weight} che somma a 1.
+                Tipicamente prodotto da load_oracle_urgency().
+            accuracy: accuratezza simulata del classificatore NLP in [0, 1].
+                1.0 = nessun rumore, 0.0 = totale random.
+            seed: per riproducibilita' della sequenza di permutazioni.
+        """
+        if abs(sum(oracle_weights.values()) - 1.0) > 1e-6:
+            raise ValueError(
+                f"oracle_weights non somma a 1: {sum(oracle_weights.values())}"
+            )
+        if not (0.0 <= accuracy <= 1.0):
+            raise ValueError(f"accuracy deve essere in [0, 1], dato: {accuracy}")
+
+        self.oracle_weights = oracle_weights
+        self.accuracy = accuracy
+        self.seed = seed
+
+        # RNG dedicato per riproducibilita'. Lo creiamo ora, non a get_urgency,
+        # cosi' la sequenza di permutazioni dipende SOLO dal seed (non dal
+        # numero o ordine dei round chiesti).
+        self._rng = np.random.default_rng(seed)
+
+    def get_urgency(
+        self,
+        round_idx: int,
+        client_names: list[str],
+    ) -> dict[str, float]:
+        # Pesi veri per i client partecipanti, nell'ordine ricevuto
+        true_weights = np.array(
+            [self.oracle_weights[c] for c in client_names],
+            dtype=float,
+        )
+
+        # Permutazione casuale dei VALORI (i client restano nell'ordine
+        # canonico, ma il loro score e' quello di un altro client a caso).
+        # Nuova permutazione ad ogni round -> rumore stocastico.
+        permutation_indices = self._rng.permutation(len(client_names))
+        permuted_weights = true_weights[permutation_indices]
+
+        # Mix additivo
+        noisy = self.accuracy * true_weights + (1 - self.accuracy) * permuted_weights
+
+        return {c: float(noisy[i]) for i, c in enumerate(client_names)}
+
+    @property
+    def name(self) -> str:
+        return f"noisy_oracle(acc={self.accuracy:.2f},seed={self.seed})"
+
+
+# ---------------------------------------------------------------------------
+# HELPER: factory che combina manifest + accuracy + seed
+# ---------------------------------------------------------------------------
+
+def load_noisy_oracle_urgency(
+    manifest_path,
+    critical_class: str,
+    client_names: list[str],
+    accuracy: float,
+    seed: int = 42,
+) -> "NoisyOracleUrgencyProvider":
+    """Costruisce un NoisyOracleUrgencyProvider leggendo il manifest.
+
+    Comoda da chiamare in fl_run.py per dire in una riga:
+        provider = load_noisy_oracle_urgency(MANIFEST, "D40",
+                                               client_names, 0.8, 42)
+    """
+    # Riusiamo la stessa logica di load_oracle_urgency
+    oracle_provider = load_oracle_urgency(
+        manifest_path, critical_class, client_names
+    )
+    return NoisyOracleUrgencyProvider(
+        oracle_weights=oracle_provider.oracle_weights,
+        accuracy=accuracy,
+        seed=seed,
+    )
+
 # ===========================================================================
 # STRATEGY
 # ===========================================================================

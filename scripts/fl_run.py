@@ -47,6 +47,7 @@ from src.federated.strategies.oracle_weighted import (  # noqa: E402
 from src.federated.strategies.nlp_weighted import (  # noqa: E402
     NLPWeightedFedAvg,
     load_oracle_urgency,
+    load_noisy_oracle_urgency,
 )
 
 
@@ -298,6 +299,14 @@ def build_strategy(args: argparse.Namespace,
                 critical_class=CRITICAL_CLASS,
                 client_names=client_names,
             )
+        elif args.urgency_provider == "noisy_oracle":
+            provider = load_noisy_oracle_urgency(
+                MANIFEST_PATH,
+                critical_class=CRITICAL_CLASS,
+                client_names=client_names,
+                accuracy=args.noise_accuracy,
+                seed=args.noise_seed,
+            )
         else:
             raise ValueError(
                 f"urgency_provider sconosciuto: {args.urgency_provider}"
@@ -350,10 +359,18 @@ def parse_args() -> argparse.Namespace:
              "1.0 = nessun decay. Default: 1.0",
     )
     parser.add_argument(
-        "--urgency-provider", choices=["oracle"], default="oracle",
-        help="Sorgente dell'urgency score. 'oracle' = pesi statici dal manifest "
-             "(equivalente a strategy=oracle, per sanity check architettura). "
-             "Default: oracle",
+        "--urgency-provider", choices=["oracle", "noisy_oracle"], default="oracle",
+        help="Sorgente dell'urgency score. 'oracle' = pesi statici dal manifest. "
+             "'noisy_oracle' = oracle + rumore (per RQ2). Default: oracle",
+    )
+    parser.add_argument(
+        "--noise-accuracy", type=float, default=1.0,
+        help="Accuratezza simulata del classificatore NLP in [0, 1]. "
+             "Usato solo se --urgency-provider noisy_oracle. Default: 1.0",
+    )
+    parser.add_argument(
+        "--noise-seed", type=int, default=42,
+        help="Seed per la sequenza di permutazioni del noisy_oracle. Default: 42",
     )
 
 
@@ -392,6 +409,9 @@ def main() -> int:
         print(f"  alpha        : {args.alpha}")
         print(f"  cap          : {args.cap}")
         print(f"  time_decay   : {args.time_decay}")
+        if args.urgency_provider == "noisy_oracle":
+            print(f"  noise_accuracy: {args.noise_accuracy}")
+            print(f"  noise_seed   : {args.noise_seed}")
     print(f"  output       : {run_root}")
     print("=" * 70)
 
@@ -435,6 +455,8 @@ def main() -> int:
         "cap": args.cap if args.strategy == "oracle" else None,
         "time_decay": args.time_decay if args.strategy == "nlp" else None,
         "urgency_provider": args.urgency_provider if args.strategy == "nlp" else None,
+        "noise_accuracy": args.noise_accuracy if args.urgency_provider == "noisy_oracle" else None,
+        "noise_seed": args.noise_seed if args.urgency_provider == "noisy_oracle" else None,
         "metrics_distributed": {
             k: [[r, v] for r, v in vals]
             for k, vals in history.metrics_distributed.items()
