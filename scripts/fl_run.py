@@ -98,6 +98,7 @@ class YoloFlowerClient(fl.client.NumPyClient):
             imgsz: int,
             device: str,
             run_root: Path,
+            seed: int = 42,
     ) -> None:
         self.client_name = client_name
         self.partition_id = partition_id
@@ -107,6 +108,7 @@ class YoloFlowerClient(fl.client.NumPyClient):
         self.imgsz = imgsz
         self.device = device
         self.run_root = run_root
+        self.seed = seed
 
         self.num_train = sum(
             1 for _ in (data_yaml.parent / "train" / "images").iterdir()
@@ -162,7 +164,7 @@ class YoloFlowerClient(fl.client.NumPyClient):
             patience=self.local_epochs + 1,
             plots=False,
             verbose=False,
-            seed=42,
+            seed=self.seed,
         )
 
         new_parameters = get_parameters_from_model(model.model)
@@ -305,7 +307,7 @@ def build_strategy(args: argparse.Namespace,
                 critical_class=CRITICAL_CLASS,
                 client_names=client_names,
                 accuracy=args.noise_accuracy,
-                seed=args.noise_seed,
+                seed=args.noise_seed if args.noise_seed is not None else args.seed,
             )
         else:
             raise ValueError(
@@ -369,8 +371,13 @@ def parse_args() -> argparse.Namespace:
              "Usato solo se --urgency-provider noisy_oracle. Default: 1.0",
     )
     parser.add_argument(
-        "--noise-seed", type=int, default=42,
+        "--noise-seed", type=int, default=None,
         help="Seed per la sequenza di permutazioni del noisy_oracle. Default: 42",
+    )
+    parser.add_argument(
+    "--seed", type=int, default=42,
+    help="Seed globale per Ultralytics (training/val) e per il numpy "
+         "interno. Default: 42",
     )
 
 
@@ -417,9 +424,14 @@ def main() -> int:
 
     strategy = build_strategy(args, client_names)
 
+    #client_resources = {
+    #    "num_cpus": 2,
+    #    "num_gpus": 1.0 if args.device != "cpu" else 0.0,
+    #}
+
     client_resources = {
         "num_cpus": 2,
-        "num_gpus": 1.0 if args.device != "cpu" else 0.0,
+        "num_gpus": 0.16 if args.device != "cpu" else 0.0,
     }
 
     history = fl.simulation.start_simulation(
@@ -457,6 +469,7 @@ def main() -> int:
         "urgency_provider": args.urgency_provider if args.strategy == "nlp" else None,
         "noise_accuracy": args.noise_accuracy if args.urgency_provider == "noisy_oracle" else None,
         "noise_seed": args.noise_seed if args.urgency_provider == "noisy_oracle" else None,
+        "seed": args.seed,
         "metrics_distributed": {
             k: [[r, v] for r, v in vals]
             for k, vals in history.metrics_distributed.items()
