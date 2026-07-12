@@ -1,0 +1,525 @@
+{
+  "run_id": "20260710_123413",
+  "started_at": "20260710_123413",
+  "scale": {
+    "name": "presentable",
+    "seeds": [
+      42,
+      123,
+      2024
+    ],
+    "rounds": 10,
+    "local_epochs": 1,
+    "imgsz": 416,
+    "description": "Scala 'presentabile' per il report (~30-50h totali)"
+  },
+  "strategies_rq1": [
+    "fedavg",
+    "oracle",
+    "nlp"
+  ],
+  "noise_levels_rq2": [
+    1.0,
+    0.9,
+    0.8,
+    0.7,
+    0.5
+  ],
+  "ablation_grid": {
+    "cap": [
+      0.3,
+      0.5,
+      0.7
+    ],
+    "time_decay": [
+      1.0,
+      0.95,
+      0.85
+    ]
+  },
+  "completed_runs": 51,
+  "rq1_runs": [
+    {
+      "phase": "rq1",
+      "run_id": "fedavg_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq1/fedavg_seed123/results.json",
+      "strategy": "fedavg",
+      "seed": 123
+    },
+    {
+      "phase": "rq1",
+      "run_id": "fedavg_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq1/fedavg_seed2024/results.json",
+      "strategy": "fedavg",
+      "seed": 2024
+    },
+    {
+      "phase": "rq1",
+      "run_id": "fedavg_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq1/fedavg_seed42/results.json",
+      "strategy": "fedavg",
+      "seed": 42
+    },
+    {
+      "phase": "rq1",
+      "run_id": "nlp_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq1/nlp_seed123/results.json",
+      "strategy": "nlp",
+      "seed": 123
+    },
+    {
+      "phase": "rq1",
+      "run_id": "nlp_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq1/nlp_seed2024/results.json",
+      "strategy": "nlp",
+      "seed": 2024
+    },
+    {
+      "phase": "rq1",
+      "run_id": "nlp_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq1/nlp_seed42/results.json",
+      "strategy": "nlp",
+      "seed": 42
+    },
+    {
+      "phase": "rq1",
+      "run_id": "oracle_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq1/oracle_seed123/results.json",
+      "strategy": "oracle",
+      "seed": 123
+    },
+    {
+      "phase": "rq1",
+      "run_id": "oracle_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq1/oracle_seed2024/results.json",
+      "strategy": "oracle",
+      "seed": 2024
+    },
+    {
+      "phase": "rq1",
+      "run_id": "oracle_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq1/oracle_seed42/results.json",
+      "strategy": "oracle",
+      "seed": 42
+    }
+  ],
+  "rq2_runs": [
+    {
+      "phase": "rq2",
+      "run_id": "nlp_acc050_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq2/nlp_acc050_seed123/results.json",
+      "strategy": "nlp",
+      "noise_accuracy": 0.5,
+      "seed": 123
+    },
+    {
+      "phase": "rq2",
+      "run_id": "nlp_acc050_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq2/nlp_acc050_seed2024/results.json",
+      "strategy": "nlp",
+      "noise_accuracy": 0.5,
+      "seed": 2024
+    },
+    {
+      "phase": "rq2",
+      "run_id": "nlp_acc050_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq2/nlp_acc050_seed42/results.json",
+      "strategy": "nlp",
+      "noise_accuracy": 0.5,
+      "seed": 42
+    },
+    {
+      "phase": "rq2",
+      "run_id": "nlp_acc070_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq2/nlp_acc070_seed123/results.json",
+      "strategy": "nlp",
+      "noise_accuracy": 0.7,
+      "seed": 123
+    },
+    {
+      "phase": "rq2",
+      "run_id": "nlp_acc070_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq2/nlp_acc070_seed2024/results.json",
+      "strategy": "nlp",
+      "noise_accuracy": 0.7,
+      "seed": 2024
+    },
+    {
+      "phase": "rq2",
+      "run_id": "nlp_acc070_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq2/nlp_acc070_seed42/results.json",
+      "strategy": "nlp",
+      "noise_accuracy": 0.7,
+      "seed": 42
+    },
+    {
+      "phase": "rq2",
+      "run_id": "nlp_acc080_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq2/nlp_acc080_seed123/results.json",
+      "strategy": "nlp",
+      "noise_accuracy": 0.8,
+      "seed": 123
+    },
+    {
+      "phase": "rq2",
+      "run_id": "nlp_acc080_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq2/nlp_acc080_seed2024/results.json",
+      "strategy": "nlp",
+      "noise_accuracy": 0.8,
+      "seed": 2024
+    },
+    {
+      "phase": "rq2",
+      "run_id": "nlp_acc080_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq2/nlp_acc080_seed42/results.json",
+      "strategy": "nlp",
+      "noise_accuracy": 0.8,
+      "seed": 42
+    },
+    {
+      "phase": "rq2",
+      "run_id": "nlp_acc090_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq2/nlp_acc090_seed123/results.json",
+      "strategy": "nlp",
+      "noise_accuracy": 0.9,
+      "seed": 123
+    },
+    {
+      "phase": "rq2",
+      "run_id": "nlp_acc090_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq2/nlp_acc090_seed2024/results.json",
+      "strategy": "nlp",
+      "noise_accuracy": 0.9,
+      "seed": 2024
+    },
+    {
+      "phase": "rq2",
+      "run_id": "nlp_acc090_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq2/nlp_acc090_seed42/results.json",
+      "strategy": "nlp",
+      "noise_accuracy": 0.9,
+      "seed": 42
+    },
+    {
+      "phase": "rq2",
+      "run_id": "nlp_acc100_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq2/nlp_acc100_seed123/results.json",
+      "strategy": "nlp",
+      "noise_accuracy": 1.0,
+      "seed": 123
+    },
+    {
+      "phase": "rq2",
+      "run_id": "nlp_acc100_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq2/nlp_acc100_seed2024/results.json",
+      "strategy": "nlp",
+      "noise_accuracy": 1.0,
+      "seed": 2024
+    },
+    {
+      "phase": "rq2",
+      "run_id": "nlp_acc100_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/rq2/nlp_acc100_seed42/results.json",
+      "strategy": "nlp",
+      "noise_accuracy": 1.0,
+      "seed": 42
+    }
+  ],
+  "ablation_runs": [
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.3_td0.85_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.3_td0.85_seed123/results.json",
+      "strategy": "nlp",
+      "cap": 0.3,
+      "time_decay": 0.85,
+      "seed": 123
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.3_td0.85_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.3_td0.85_seed2024/results.json",
+      "strategy": "nlp",
+      "cap": 0.3,
+      "time_decay": 0.85,
+      "seed": 2024
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.3_td0.85_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.3_td0.85_seed42/results.json",
+      "strategy": "nlp",
+      "cap": 0.3,
+      "time_decay": 0.85,
+      "seed": 42
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.3_td0.95_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.3_td0.95_seed123/results.json",
+      "strategy": "nlp",
+      "cap": 0.3,
+      "time_decay": 0.95,
+      "seed": 123
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.3_td0.95_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.3_td0.95_seed2024/results.json",
+      "strategy": "nlp",
+      "cap": 0.3,
+      "time_decay": 0.95,
+      "seed": 2024
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.3_td0.95_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.3_td0.95_seed42/results.json",
+      "strategy": "nlp",
+      "cap": 0.3,
+      "time_decay": 0.95,
+      "seed": 42
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.3_td1.0_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.3_td1.0_seed123/results.json",
+      "strategy": "nlp",
+      "cap": 0.3,
+      "time_decay": 1.0,
+      "seed": 123
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.3_td1.0_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.3_td1.0_seed2024/results.json",
+      "strategy": "nlp",
+      "cap": 0.3,
+      "time_decay": 1.0,
+      "seed": 2024
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.3_td1.0_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.3_td1.0_seed42/results.json",
+      "strategy": "nlp",
+      "cap": 0.3,
+      "time_decay": 1.0,
+      "seed": 42
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.5_td0.85_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.5_td0.85_seed123/results.json",
+      "strategy": "nlp",
+      "cap": 0.5,
+      "time_decay": 0.85,
+      "seed": 123
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.5_td0.85_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.5_td0.85_seed2024/results.json",
+      "strategy": "nlp",
+      "cap": 0.5,
+      "time_decay": 0.85,
+      "seed": 2024
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.5_td0.85_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.5_td0.85_seed42/results.json",
+      "strategy": "nlp",
+      "cap": 0.5,
+      "time_decay": 0.85,
+      "seed": 42
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.5_td0.95_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.5_td0.95_seed123/results.json",
+      "strategy": "nlp",
+      "cap": 0.5,
+      "time_decay": 0.95,
+      "seed": 123
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.5_td0.95_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.5_td0.95_seed2024/results.json",
+      "strategy": "nlp",
+      "cap": 0.5,
+      "time_decay": 0.95,
+      "seed": 2024
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.5_td0.95_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.5_td0.95_seed42/results.json",
+      "strategy": "nlp",
+      "cap": 0.5,
+      "time_decay": 0.95,
+      "seed": 42
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.5_td1.0_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.5_td1.0_seed123/results.json",
+      "strategy": "nlp",
+      "cap": 0.5,
+      "time_decay": 1.0,
+      "seed": 123
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.5_td1.0_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.5_td1.0_seed2024/results.json",
+      "strategy": "nlp",
+      "cap": 0.5,
+      "time_decay": 1.0,
+      "seed": 2024
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.5_td1.0_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.5_td1.0_seed42/results.json",
+      "strategy": "nlp",
+      "cap": 0.5,
+      "time_decay": 1.0,
+      "seed": 42
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.7_td0.85_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.7_td0.85_seed123/results.json",
+      "strategy": "nlp",
+      "cap": 0.7,
+      "time_decay": 0.85,
+      "seed": 123
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.7_td0.85_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.7_td0.85_seed2024/results.json",
+      "strategy": "nlp",
+      "cap": 0.7,
+      "time_decay": 0.85,
+      "seed": 2024
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.7_td0.85_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.7_td0.85_seed42/results.json",
+      "strategy": "nlp",
+      "cap": 0.7,
+      "time_decay": 0.85,
+      "seed": 42
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.7_td0.95_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.7_td0.95_seed123/results.json",
+      "strategy": "nlp",
+      "cap": 0.7,
+      "time_decay": 0.95,
+      "seed": 123
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.7_td0.95_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.7_td0.95_seed2024/results.json",
+      "strategy": "nlp",
+      "cap": 0.7,
+      "time_decay": 0.95,
+      "seed": 2024
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.7_td0.95_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.7_td0.95_seed42/results.json",
+      "strategy": "nlp",
+      "cap": 0.7,
+      "time_decay": 0.95,
+      "seed": 42
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.7_td1.0_seed123",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.7_td1.0_seed123/results.json",
+      "strategy": "nlp",
+      "cap": 0.7,
+      "time_decay": 1.0,
+      "seed": 123
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.7_td1.0_seed2024",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.7_td1.0_seed2024/results.json",
+      "strategy": "nlp",
+      "cap": 0.7,
+      "time_decay": 1.0,
+      "seed": 2024
+    },
+    {
+      "phase": "ablation",
+      "run_id": "nlp_cap0.7_td1.0_seed42",
+      "success": true,
+      "results_json_path": "report_pipeline/20260710_123413/ablation/nlp_cap0.7_td1.0_seed42/results.json",
+      "strategy": "nlp",
+      "cap": 0.7,
+      "time_decay": 1.0,
+      "seed": 42
+    }
+  ],
+  "finished_at": "20260711_153452"
+}
