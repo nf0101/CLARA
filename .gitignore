@@ -1,17 +1,32 @@
-# data: ignora tutto, eccetto le directory stesse e i .gitkeep
-data/raw/*
-data/processed/*
-data/synthetic/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-!data/synthetic/.gitkeep
-!data/raw/*/
-!data/processed/*/
-!data/raw/*/.gitkeep
-!data/processed/*/.gitkeep
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
 
-# experiments: stessa logica
-experiments/*
-!experiments/.gitkeep
-!experiments/*/
-!experiments/*/.gitkeep
+# IDE
+.idea/
+.vscode/
+
+# Dati grezzi e processati (grossi, rigenerabili con setup_runpod.sh)
+data/raw/
+data/processed/
+
+# Modelli pretrainati (si riscaricano)
+yolo*.pt
+
+# Log grossi
+*.log
+sweep_*.log
+
+# Cache
+.cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Duplicati delle run singole (gia' in experiments/report_pipeline/)
+experiments/fl_runs/
