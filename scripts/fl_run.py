@@ -309,6 +309,13 @@ def build_strategy(args: argparse.Namespace,
                 accuracy=args.noise_accuracy,
                 seed=args.noise_seed if args.noise_seed is not None else args.seed,
             )
+        elif args.urgency_provider == "nlp_pipeline":
+            from src.nlp.urgency_provider import NLPUrgencyProvider
+            provider = NLPUrgencyProvider(
+                complaints_csv_path="data/nlp/synthetic_complaints_realistic.csv",
+                all_clients=client_names,
+                verbose=True,
+            )
         else:
             raise ValueError(
                 f"urgency_provider sconosciuto: {args.urgency_provider}"
@@ -361,7 +368,7 @@ def parse_args() -> argparse.Namespace:
              "1.0 = nessun decay. Default: 1.0",
     )
     parser.add_argument(
-        "--urgency-provider", choices=["oracle", "noisy_oracle"], default="oracle",
+        "--urgency-provider", choices=["oracle", "noisy_oracle", "nlp_pipeline"], default="oracle",
         help="Sorgente dell'urgency score. 'oracle' = pesi statici dal manifest. "
              "'noisy_oracle' = oracle + rumore (per RQ2). Default: oracle",
     )
