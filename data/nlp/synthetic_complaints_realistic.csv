@@ -1,0 +1,61 @@
+id,text,expected_country,expected_severity
+c001,"There's a massive pothole on Main Street in Mumbai that damaged my car this morning. This is dangerous, someone will get hurt if the city doesn't fix it immediately!",india,high
+c002,"Life-threatening road damage on Lucknow bypass. Three vehicles damaged today alone. Authorities MUST act now!",india,high
+c003,"Hyderabad main junction is a death trap. Enormous pothole in the middle of the road, cars swerving dangerously. IMMEDIATE ACTION NEEDED.",india,high
+c004,"Absolute disaster on the Kolkata bridge access road. Deep potholes, no lighting, multiple accidents this week already.",india,high
+c005,"Delhi ring road is in appalling condition. Massive craters everywhere, complete negligence by authorities. Urgent repair needed!",india,high
+c006,"Terrible pothole situation on the highway near Mumbai. Absolutely destroyed suspensions of three vehicles today. Fix this NOW.",india,high
+c007,"Chennai coastal road is critically damaged. Multiple huge potholes forming, motorcycles crashing daily. IMMEDIATE ATTENTION REQUIRED.",india,high
+c008,"Deep dangerous pothole on Bangalore ring road near tech park. Cars swerving into oncoming traffic. Fix urgently!",india,high
+c009,"Pune highway has developed a MASSIVE crater. Multiple accidents already, someone will die. Act now!",india,high
+c010,"Ahmedabad main road has enormous potholes. Life-threatening for motorcyclists. Emergency repair needed!",india,high
+c011,"Reporting transverse cracks on Ahmedabad ring road. Medium severity, plan maintenance please.",india,medium
+c012,"Jaipur old city road has a growing pothole. Should be filled in the next two weeks.",india,medium
+c013,"Chennai coastal road showing signs of longitudinal cracking. Medium priority repair suggested.",india,medium
+c014,"Small crack observed on road near Delhi metro station. Low priority.",india,low
+c015,"Road near Bangalore tech park has a small hole. Not major but growing.",india,low
+c016,"There is an enormous pothole on the road to Nagoya airport. My motorcycle almost crashed. This needs urgent attention!!!",japan,high
+c017,"Extremely dangerous road conditions in Sendai. Multiple deep holes on the main avenue. Someone will die if this isn't fixed!",japan,high
+c018,"The road on Ginza avenue in Tokyo is completely destroyed. Huge holes everywhere, cars swerving into oncoming traffic. Absolutely unacceptable.",japan,high
+c019,"Kyoto downtown road surface is deteriorating badly. Deep potholes forming after last month's rain. Public safety concern.",japan,high
+c020,"There's a massive pothole on Main Street in Tokyo that damaged my car this morning. This is dangerous, someone will get hurt!",japan,high
+c021,"Osaka highway has a critical situation. Multiple deep potholes, life-threatening for motorcyclists. URGENT!",japan,high
+c022,"Yokohama bridge access road has developed dangerous potholes. Cars damaged, multiple accidents. Fix immediately!",japan,high
+c023,"Reporting a longitudinal crack on the highway near Osaka. Medium severity, would appreciate maintenance in the next few weeks.",japan,medium
+c024,"Alligator cracking pattern observed on secondary road in Sapporo. Requires patching soon.",japan,medium
+c025,"Pothole spotted near Fukuoka train station, medium size. Should be repaired within the month.",japan,medium
+c026,"Small crack forming near the intersection of Shibuya crossing in Tokyo. Not urgent but should be noted.",japan,low
+c027,"Minor surface wear on the road near Yokohama station. Just wanted to log it for future reference.",japan,low
+c028,"Enormous pothole on the E6 highway near Oslo. Truck lost its wheel this morning, could have been fatal. URGENT!",norway,high
+c029,"Trondheim coastal road has severe damage after the winter freeze. Multiple deep holes forming. Priority repair!",norway,medium
+c030,"Stavanger residential area road shows longitudinal cracking. Medium urgency.",norway,medium
+c031,"Reporting freeze-thaw damage on the road to Alesund. Big cracks, potholes forming.",norway,medium
+c032,"Minor crack on the road near Bergen fish market. Low priority.",norway,low
+c033,"Drammen main street shows some surface wear. Nothing urgent to report.",norway,low
+c034,"Sandnes industrial area roads have minor cracks. Log for later maintenance.",norway,low
+c035,"Guangzhou downtown road has multiple deep potholes. Motorcycles crashing daily. IMMEDIATE ACTION REQUIRED!",china_motorbike,medium
+c036,"Shenzhen tech district road shows some surface wear. Medium priority.",china_motorbike,medium
+c037,"Wuhan bridge access road shows alligator cracking. Medium severity for motorcycles.",china_motorbike,medium
+c038,"Small crack near Shanghai bund road. Low priority.",china_motorbike,low
+c039,"Reporting minor pavement wear near Hangzhou West Lake. Nothing critical.",china_motorbike,low
+c040,"Nanjing road shows growing pothole near the airport exit. Should be repaired soon.",china_motorbike,low
+c041,"Ostrava industrial zone road is heavily damaged with deep potholes. Trucks are swerving to avoid them.",czech,medium
+c042,"Historic city center in Cesky Krumlov has damaged cobblestones and potholes appearing. Concerns for tourism and safety.",czech,medium
+c043,"Small crack observed on the road near Brno castle. Not critical yet.",czech,low
+c044,"Reporting minor road wear near Olomouc station. Nothing urgent.",czech,low
+c045,"Small surface damage near Hradec Kralove airport road. Log for reference.",czech,low
+c046,"Reporting alligator cracks on the highway near Houston. Medium severity, plan maintenance.",united_states,medium
+c047,"Denver mountain highway shows longitudinal cracking. Medium urgency, monitor closely.",united_states,medium
+c048,"Small surface wear on the road near Los Angeles airport. Low priority.",united_states,low
+c049,"Small crack near Phoenix airport road. Not urgent.",united_states,low
+c050,"Seattle downtown road has some surface wear. Log for reference.",united_states,low
+c051,"MASSIVE pothole appeared overnight on the road to Karlovy Vary. My car is in the shop now because of it. Furious!",india,high
+c052,"Cracks forming near Liberec town square. Would benefit from maintenance in coming weeks.",india,medium
+c053,"Growing pothole spotted on the Ginza street area in Tokyo. Should be repaired within the month.",japan,medium
+c054,"Reporting freeze-thaw damage forming on the highway near Fredrikstad. Medium priority.",norway,medium
+c055,"Minor surface issues near Tromso airport, will grow if not addressed but not critical yet.",norway,low
+c056,"Growing pothole reported in Chengdu ring road area. Should be filled in coming weeks.",china_motorbike,medium
+c057,"Small pavement issue near Beijing suburbs, log for future reference.",china_motorbike,low
+c058,"Reporting linear crack developing on the highway between Plzen and Prague. Medium priority, please monitor.",czech,medium
+c059,"Boston highway near the tunnel has developed some cracking. Medium priority to address.",united_states,medium
+c060,"Chicago downtown has small surface wear on Michigan Avenue. Log for reference.",united_states,low
