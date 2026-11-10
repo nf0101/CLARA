@@ -29,7 +29,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
+from matplotlib.patches import Rectangle
 
 # ===========================================================================
 # CARICAMENTO E LONG-FORMAT
@@ -268,6 +268,15 @@ def plot_ablation_heatmap(df_final: pd.DataFrame, figures_dir: Path) -> None:
                     ha="center", va="center",
                     color="white" if pivot.values[i,j] < pivot.values.mean() else "black")
 
+    # evidenzia la configurazione di default usata in RQ1 e RQ2
+    DEFAULT_CAP, DEFAULT_DECAY = 0.5, 1.00
+    rows = [float(v) for v in pivot.index]
+    cols = [float(v) for v in pivot.columns]
+    i_def = min(range(len(rows)), key=lambda k: abs(rows[k] - DEFAULT_CAP))
+    j_def = min(range(len(cols)), key=lambda k: abs(cols[k] - DEFAULT_DECAY))
+    ax.add_patch(Rectangle((j_def - 0.47, i_def - 0.47), 0.94, 0.94,
+                           fill=False, edgecolor="white",
+                           linewidth=3, zorder=5))
     plt.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
     plt.tight_layout()
     plt.savefig(figures_dir / "ablation_cap_decay_heatmap.png", dpi=150,

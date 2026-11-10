@@ -8,6 +8,10 @@ version = "0.1.0"
 description = "Monitoraggio urbano distribuito via Federated Learning + NLP-Weighted Aggregation"
 requires-python = ">=3.10"
 readme = "README.md"
+dependencies = [
+    "matplotlib>=3.10.9",
+    "transformers>=5.17.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]

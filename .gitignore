@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 *.pyo
+*.py[cod]
 *.egg-info/
 .venv/
 venv/
@@ -30,3 +31,6 @@ Thumbs.db
 
 # Duplicati delle run singole (gia' in experiments/report_pipeline/)
 experiments/fl_runs/
+*.pt
+*.pth
+experiments/**/weights/
