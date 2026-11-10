@@ -408,7 +408,11 @@ per-stage NLP evaluation — is in [`docs/main.pdf`](docs/main.pdf).
 
 ## License
 
-Released under the MIT License — see [`LICENSE`](LICENSE).
+Released under the GNU Affero General Public License v3.0 — see [`LICENSE`](LICENSE).
+This project builds on Ultralytics YOLOv8, itself AGPL-3.0 licensed.
 
-RDD2022 is redistributed by its original authors under its own terms; this repository contains no
-dataset images.
+The report in `docs/` is released under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
+RDD2022 is redistributed by its original authors under its own terms; this repository
+contains no dataset images.
