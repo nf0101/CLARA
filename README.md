@@ -34,12 +34,12 @@ the detector architecture is untouched.
                  │                                │
         ┌────────▼────────┐              ┌────────▼────────┐
         │  NLP pipeline   │              │  6 FL clients   │
-        │   (4 stages)    │              │   YOLOv8n       │
+        │   (4 stages)    │              │    YOLOv8n      │
         └────────┬────────┘              └────────┬────────┘
                  │ urgency vector                 │ weights + n_k
                  └──────────────┬─────────────────┘
                         ┌───────▼───────┐
-                        │  FL server    │
+                        │   FL server   │
                         │ NLP-Weighted  │
                         └───────────────┘
 ```
@@ -49,7 +49,7 @@ the detector architecture is untouched.
 ## Results
 
 Primary metric is `critical_ap50` — AP@IoU 0.5 computed **on the critical class D40 (potholes)
-only**. All figures are mean ± std over three seeds `{42, 123, 2024}` at federated round 10.
+only**. Figures are mean ± std over three seeds at federated round 10.
 
 | Strategy | `critical_ap50` | mAP@50 | mAP@50-95 |
 |---|---|---|---|
@@ -71,12 +71,12 @@ Two further findings:
 
 ### NLP module, stage by stage
 
-| Stage | What it does | Accuracy |
-|---|---|---|
-| 1 — Geographic NER | extracts the locating entity (spaCy `en_core_web_lg`) | 91.7 % |
-| 2 — Location → client | hybrid lookup + raw-text fallback | 100 % |
-| 3 — Severity | Twitter-RoBERTa + lexical heuristics | 86.7 % |
-| 4 — Aggregation | sum per client, floor, normalise | — |
+| Stage | Module | What it does | Accuracy |
+|---|---|---|---|
+| 1 | `ner_module.py` | extracts the locating entity (spaCy `en_core_web_lg`) | 91.7 % |
+| 2 | `location_mapper.py` | hybrid lookup + raw-text fallback → federated client | 100 % |
+| 3 | `sentiment_module.py` | Twitter-RoBERTa + lexical heuristics → severity in [0, 1] | 86.7 % |
+| 4 | `aggregator.py` | sum per client, floor at `u_min`, normalise to 1 | — |
 
 Because every stage has its own ground truth, errors are **attributable**: when the end-to-end
 vector drifts, you can say which stage caused it.
@@ -108,8 +108,8 @@ perfect NLP module. It caps expectations honestly: no real pipeline can beat it 
 
 **C · Controlled noise sweep**
 
-`NoisyOracleUrgencyProvider` interpolates between the oracle vector and a random permutation,
-letting you *dial* the signal quality — impossible with a real pipeline, whose error rate is fixed.
+`noise_injection.py` interpolates between the oracle vector and a random permutation, letting you
+*dial* the signal quality — impossible with a real pipeline, whose error rate is fixed.
 
 </td></tr>
 </table>
@@ -123,33 +123,55 @@ and gets its own run.
 ## Repository layout
 
 ```
-.
+├── configs/
+│   ├── base.yaml                          # shared defaults
+│   ├── data/rdd2022_country_split.yaml    # the six federated clients
+│   ├── experiments/                       # one file per research question
+│   │   ├── rq1_baselines_vs_proposed.yaml
+│   │   ├── rq2_nlp_noise_sweep.yaml
+│   │   └── ablation_cap_decay.yaml
+│   └── strategies/                        # one file per aggregation strategy
+│       ├── fedavg.yaml
+│       ├── oracle_weighted.yaml
+│       └── nlp_weighted.yaml
 ├── src/
-│   ├── fl/                     # federated learning module
-│   │   ├── strategies.py       # FedAvg, Oracle-Weighted, NLP-Weighted (Flower Strategy)
-│   │   ├── providers.py        # UrgencyProvider ABC + three implementations
-│   │   └── client.py           # Flower client wrapping the Ultralytics trainer
-│   └── nlp/                    # NLP pipeline, one module per stage
-│       ├── ner.py              # stage 1 — geographic NER
-│       ├── mapping.py          # stage 2 — location → federated client
-│       ├── severity.py         # stage 3 — hybrid severity scoring
-│       └── aggregator.py       # stage 4 — per-client urgency vector
+│   ├── fl_server/
+│   │   ├── custom_strategies.py           # Oracle-Weighted, NLP-Weighted
+│   │   └── server.py
+│   ├── fl_client/
+│   │   ├── client.py                      # Flower client
+│   │   └── local_training.py              # wraps the Ultralytics trainer
+│   ├── nlp/
+│   │   ├── ner_module.py                  # stage 1
+│   │   ├── location_mapper.py             # stage 2
+│   │   ├── sentiment_module.py            # stage 3
+│   │   ├── aggregator.py                  # stage 4
+│   │   ├── urgency_provider.py            # the FL ↔ NLP interface
+│   │   └── noise_injection.py             # controlled degradation (component C)
+│   ├── models/
+│   │   ├── yolo_wrapper.py
+│   │   └── nlp_pipeline.py                # the four stages, end to end
+│   ├── evaluation/critical_classes.py     # critical_ap50
+│   └── utils/{metrics,time_decay,risk_matrix}.py
 ├── scripts/
-│   ├── convert_voc_to_yolo_all.py      # RDD2022: Pascal VOC → YOLO
-│   ├── run_full_pipeline.py            # orchestrates the 51-run sweep (resumable)
-│   └── aggregate_pipeline_results.py   # aggregates results, emits figures and tables
+│   ├── convert_voc_to_yolo.py             # RDD2022: Pascal VOC → YOLO, per client
+│   ├── run_full_pipeline.py               # orchestrates the whole experimental sweep
+│   ├── aggregate_pipeline_results.py      # results → CSV, figures, LaTeX tables
+│   ├── eval_sentiment.py                  # NLP module in isolation
+│   └── analyze_noniid_distrib.py          # Non-IID statistics of the partition
 ├── data/
-│   ├── synthetic_complaints.csv            # balanced: 10 complaints × 6 clients
-│   └── synthetic_complaints_realistic.csv  # realistic: proportional to D40 presence
-└── results/                    # per-phase / per-run logs and results.json
+│   ├── nlp/
+│   │   ├── synthetic_complaints.csv            # balanced: 10 complaints × 6 clients
+│   │   └── synthetic_complaints_realistic.csv  # proportional to D40 presence
+│   └── processed/rdd2022_clients/         # output of the converter
+├── experiments/report_pipeline/<run_id>/  # one directory per sweep
+└── docs/main.pdf                          # the full report
 ```
-
-> Adjust the names under `src/` to match your tree if they differ — the entries under `scripts/`
-> and `data/` are the ones referenced throughout the report.
 
 ### The interface that makes the protocol possible
 
-The FL and NLP modules communicate through exactly one abstraction:
+The FL and NLP modules communicate through exactly one abstraction, in
+`src/nlp/urgency_provider.py`:
 
 ```python
 class UrgencyProvider(ABC):
@@ -164,43 +186,58 @@ class UrgencyProvider(ABC):
         """Returns {client_name: urgency_score}, normalised to sum to 1."""
 ```
 
-From the server's point of view the three implementations are indistinguishable. That is what lets
-the same aggregation code run against a perfect oracle, a noise-controlled oracle, and the real
-pipeline — with no branching and no duplicated integration logic.
+From the server's point of view the three implementations — oracle, noisy oracle, real pipeline —
+are indistinguishable. That is what lets the same aggregation code run against all three with no
+branching and no duplicated integration logic.
 
 ---
 
 ## Setup
 
-### 1 · Environment
-
 ```bash
 git clone https://github.com/nf0101/CLARA.git
 cd CLARA
 
-python3.10 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
+# with uv (a uv.lock is committed)
+uv sync
 
+# or with pip
+python3.10 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+pip install -e .
+
 python -m spacy download en_core_web_lg
 ```
 
 The Twitter-RoBERTa checkpoint is pulled from the Hugging Face Hub on first use and cached
 locally — no manual download needed.
 
-### 2 · Dataset
+### Dataset
 
 RDD2022 is distributed on figshare under DOI
 [`10.6084/m9.figshare.21431547`](https://doi.org/10.6084/m9.figshare.21431547). Download it, place
-the six country archives under `data/rdd2022/`, then convert the annotations:
+the country archives under `data/raw/`, then convert:
 
 ```bash
-python scripts/convert_voc_to_yolo_all.py --src data/rdd2022 --dst data/rdd2022_yolo
+python scripts/convert_voc_to_yolo.py
 ```
 
-The converter keeps the four standard classes (D00, D10, D20, D40) and **discards the
-country-specific ones** (D43, D44, D50, present almost exclusively in the Japanese subset), so that
-every client shares a uniform label vocabulary. Discarded counts are logged for transparency.
+This produces one self-contained directory per federated client under
+`data/processed/rdd2022_clients/`, each with its own `data.yaml` and a `conversion_manifest.json`.
+Pointing an Ultralytics command at any of them trains on that country alone.
+
+```bash
+python scripts/convert_voc_to_yolo.py --countries Japan India   # subset only
+python scripts/convert_voc_to_yolo.py --val-fraction 0.15 --seed 42
+```
+
+Two choices baked into the converter:
+
+- Only the four standard classes are kept. The country-specific ones (D43, D44, D50, present almost
+  exclusively in the Japanese subset) are discarded so every client shares a uniform label
+  vocabulary; discarded counts are logged for transparency.
+- `China_Drone` is excluded — drone imagery is a very different visual domain, and the FL literature
+  on RDD2022 does not use it. The remaining six follow the convention of Saha et al. (2024).
 
 After conversion you should see roughly:
 
@@ -214,67 +251,70 @@ After conversion you should see roughly:
 | `united_states` | 4 085 | 720 | 135 |
 
 That last column is the whole motivation: **India holds 49 % of all pothole instances while Japan
-holds more images overall** — so FedAvg would hand Japan the larger weight.
+holds more images overall** — so FedAvg hands Japan the larger weight.
 
 ---
 
 ## Reproducing the experiments
 
-### Quick check — one run, ~30 min
+One command runs everything: RQ1, RQ2, the ablation, the aggregation and the figures.
 
 ```bash
-python scripts/run_full_pipeline.py --phase rq1 --strategy nlp_weighted --seed 42
+python scripts/run_full_pipeline.py                      # default: --scale presentable
 ```
 
-### Full sweep — 51 runs, ~25 h
+### Scale presets
+
+| Preset | Seeds | Rounds | Wall clock | Use for |
+|---|---:|---:|---|---|
+| `debug` | 1 | 3 | ~1 h | checking the environment works |
+| `presentable` | 3 | 10 | ~25–30 h | **the configuration reported above** |
+| `full` | 5 | 15 | ~360 h | a cluster, not a workstation |
 
 ```bash
-python scripts/run_full_pipeline.py --all
+python scripts/run_full_pipeline.py --scale debug        # quick smoke run
+python scripts/run_full_pipeline.py --only rq1           # one phase
+python scripts/run_full_pipeline.py --skip ablation      # repeatable
+python scripts/run_full_pipeline.py --no-analysis        # skip figures and tables
+python scripts/run_full_pipeline.py --resume 20260710_123413
 ```
 
-Three phases, each run three times over seeds `{42, 123, 2024}`:
+### What a run produces
 
-| Phase | What varies | Runs |
-|---|---|---:|
-| **RQ1** — does the mechanism work? | strategy: FedAvg, Oracle-Weighted, NLP-Weighted | 9 |
-| **RQ2** — how robust to NLP noise? | simulated accuracy `a ∈ {1.0, 0.9, 0.8, 0.7, 0.5}` | 15 |
-| **Ablation** — are the safeguards critical? | `cap ∈ {0.3, 0.5, 0.7}` × `decay ∈ {0.85, 0.95, 1.00}` | 27 |
+Everything lands under `experiments/report_pipeline/<timestamp>/`:
 
-Runs are **resumable**: re-invoking the script skips any run whose `results.json` already exists, so
-an interrupted sweep picks up where it stopped.
+```
+rq1/  rq2/  ablation/        per-run logs and results.json
+aggregated.csv               every result, long format
+figures/                     rq1_strategy_comparison.png, rq1_per_round.png,
+                             rq2_robustness_curve.png, ablation_cap_decay_*.png
+tables/                      rq1_summary.tex, rq2_summary.tex, ablation_summary.tex, summary.md
+pipeline_manifest.json       the full configuration, for reproducibility
+```
 
-### End-to-end run with the real pipeline
+Aggregation runs automatically at the end of the sweep. To re-run it on an existing directory —
+after tweaking a plot, say:
 
 ```bash
-python scripts/run_full_pipeline.py --phase e2e \
-    --provider nlp \
-    --complaints data/synthetic_complaints_realistic.csv \
-    --seed 42
+python scripts/aggregate_pipeline_results.py \
+    --pipeline-dir experiments/report_pipeline/20260710_123413
 ```
-
-Same configuration as the sweep; the only difference is the source of the signal.
-
-### Aggregating results
-
-```bash
-python scripts/aggregate_pipeline_results.py --results results/ --out docs/
-```
-
-Emits the per-round curves, the strategy comparison, the robustness curve, the ablation dot plot and
-the LaTeX tables used in the report.
 
 ### NLP module in isolation
 
-The pipeline can be evaluated without touching the FL side — useful for iterating on the severity
+The pipeline can be evaluated without touching the FL side — useful when iterating on the severity
 heuristics, which is where the remaining error lives:
 
 ```bash
-python -m src.nlp.evaluate --dataset data/synthetic_complaints.csv --per-stage
+python scripts/eval_sentiment.py
 ```
 
 ---
 
 ## Configuration reference
+
+Defaults live in `configs/base.yaml` and are overridden per experiment under
+`configs/experiments/`.
 
 | Parameter | Default | Role |
 |---|---|---|
@@ -283,14 +323,14 @@ python -m src.nlp.evaluate --dataset data/synthetic_complaints.csv --per-stage
 | `time_decay` (γ) | 1.0 | decay of the urgency signal across rounds; `1.0` means **inactive** |
 | `u_min` | 0.01 | floor on raw urgency, so a silent client is never zeroed out |
 | `w_T` | 0.4 | contraction applied to the Transformer's deviation from neutral |
-| `rounds` | 10 | federated rounds |
+| `rounds` | 10 | federated rounds (`presentable` preset) |
 | `local_epochs` | 1 | local epochs per round |
 | `imgsz` | 416 | input resolution |
 | `batch` | 16 | local batch size |
 
 Two notes that matter for interpreting results.
 
-**`time_decay = 1.0` means the decay is off.** The formula reduces to the identity, and the signal
+**`time_decay = 1.0` means the decay is off.** The formula reduces to the identity and the signal
 keeps full strength at every round. It is varied only in the ablation.
 
 **Neither safeguard ever binds in RQ1 and RQ2.** The highest weight any client reaches is 0.354
@@ -310,11 +350,7 @@ is a **logical scheduling quota**, letting Ray co-locate all six client actors o
 is not a VRAM partition, and video memory stays shared. Peak GPU utilisation sits around 96–99 %
 with roughly 6.5 GB of the 16 GB in use.
 
-A single 10-round run takes about 30 minutes; the full 51-run sweep about 25 hours.
-
-Experiments were run at a deliberately reduced scale (10 rounds, 416 px, one local epoch) so the
-complete sweep would fit on one workstation. This is **not** the scale used by CRDDC leaderboard
-entries, and it is declared among the limitations.
+A single 10-round run takes about 30 minutes; the full `presentable` sweep about 25 hours.
 
 ---
 
@@ -323,10 +359,10 @@ entries, and it is declared among the limitations.
 Stated plainly, because they bound what the numbers mean:
 
 1. **The baseline is FedAvg**, which is known to underperform on severe Non-IID. FedProx and
-   SCAFFOLD would likely have narrowed the gap; they were not run because both require intercepting
-   the loss or gradients inside Ultralytics' `DetectionTrainer`, and that coupling is fragile across
-   versions. Note they operate on *local training* while CLARA operates on *aggregation* — they are
-   composable, not competing.
+   SCAFFOLD would likely have narrowed the gap; they are **not implemented** (the YAML stubs under
+   `configs/strategies/` are placeholders). Both require intercepting the loss or the gradients
+   inside Ultralytics' `DetectionTrainer`, and that coupling is fragile across versions. Note they
+   act on *local training* while CLARA acts on *aggregation* — they are composable, not competing.
 2. **The complaint dataset is synthetic and small** (60 items, LLM-generated then hand-annotated).
    Its variation covers what the pipeline is designed to handle; it contains no typos, no
    code-switching and no locations outside the mapping table. Treat the accuracies as proof of
@@ -334,7 +370,7 @@ Stated plainly, because they bound what the numbers mean:
 3. **Clients are countries, not intra-city zones**, for want of a public dataset at that granularity.
 4. **Three seeds** is the reasonable minimum, not the ideal. Three independent estimates of the same
    nominal configuration span 0.008 — roughly 60 % of the headline effect.
-5. **Reduced training scale**, as described above.
+5. **Reduced training scale** (`presentable`), not the scale used by CRDDC leaderboard entries.
 6. **The oracle vector is computed over train and validation combined.** The L1 distance from the
    train-only vector is 0.0005, so the effect is negligible, but it is disclosed: it marginally
    strengthens the oracle's character as an upper bound.
@@ -347,7 +383,7 @@ The interface constrains the *shape* of the signal, not its source. Any process 
 normalised per-client priority vector plugs in unchanged: IoT sensors, weather alerts,
 epidemiological data, administrative priorities.
 
-NLP-Weighted is the instance that was validated here. The family is **Context-Weighted FedAvg**, and
+NLP-Weighted is the instance validated here. The family is **Context-Weighted FedAvg**, and
 formalising it — characterising the requirements an external signal must satisfy, and what the
 validation protocol becomes when component B has no manifest to read — is the extension that
 interests me most.
@@ -357,7 +393,8 @@ interests me most.
 ## Citation
 
 This repository accompanies a combined Deep Learning + Natural Language Processing project at the
-Università degli Studi di Salerno.
+Università degli Studi di Salerno. The full report — validation protocol, complete result tables,
+per-stage NLP evaluation — is in [`docs/main.pdf`](docs/main.pdf).
 
 ```bibtex
 @misc{frugieri2026clara,
@@ -368,9 +405,6 @@ Università degli Studi di Salerno.
   url    = {https://github.com/nf0101/CLARA}
 }
 ```
-
-The full report, including the validation protocol, complete result tables and the per-stage NLP
-evaluation, is in [`docs/report.pdf`](docs/report.pdf).
 
 ## License
 
